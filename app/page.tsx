@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { DndContext, DragEndEvent, closestCorners } from '@dnd-kit/core';
-// Yolları nokta atışı güncelledik:
+
 import { Column } from '../src/components/Column';
 import { useBoardStore } from '../src/store/useBoardStore';
 

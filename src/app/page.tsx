@@ -15,7 +15,7 @@ export default function Home() {
   const { tasks, setTasks, moveTask } = useBoardStore();
   const [isClient, setIsClient] = useState(false);
 
-  // Sayfa yüklendiğinde test için sahte veriler ekleyelim
+  
   useEffect(() => {
     setIsClient(true);
     if (tasks.length === 0) {
@@ -27,7 +27,7 @@ export default function Home() {
     }
   }, [tasks.length, setTasks]);
 
-  // Kart bırakıldığında çalışacak fonksiyon
+  
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -35,7 +35,7 @@ export default function Home() {
     const taskId = active.id as string;
     const overId = over.id as string;
 
-    // Eğer bir kartın (TaskCard) üzerine bırakıldıysa
+    
     const overTask = tasks.find((t) => t.id === overId);
     if (overTask) {
       if (active.data.current?.task.columnId !== overTask.columnId) {
@@ -44,7 +44,7 @@ export default function Home() {
       return;
     }
 
-    // Eğer doğrudan bir sütunun (Column) üzerine bırakıldıysa
+    
     const overColumn = COLUMNS.find((c) => c.id === overId);
     if (overColumn) {
       moveTask(taskId, overColumn.id);
