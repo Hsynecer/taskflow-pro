@@ -49,4 +49,3 @@ The project follows a modular architecture, separating the Zustand store for sta
 ---
 *Developed by Hüseyin Ecer as part of the KoçSistem NewChapter technical assessment.*
 
-

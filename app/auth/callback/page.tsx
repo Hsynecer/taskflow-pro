@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase'; // Yol farklıysa kendi projene göre ayarla
+export const dynamic = 'force-dynamic';
+
 
 export default function AuthCallback() {
   const router = useRouter();
