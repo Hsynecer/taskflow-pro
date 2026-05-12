@@ -6,19 +6,28 @@ import { DndContext, DragEndEvent, closestCorners } from '@dnd-kit/core';
 
 import { Column } from '../src/components/Column';
 import { useBoardStore } from '../src/store/useBoardStore';
-import { supabase } from '../src/lib/supabase'; 
+import { supabase } from '../src/lib/supabase';
 
 export default function Home() {
   const router = useRouter();
   
-  // DİKKAT: setTasks sildik, yerine initializeBoard ve columns ekledik
   const { columns, tasks, initializeBoard, moveTask, isLoading } = useBoardStore();
   const [isClient, setIsClient] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // MOBİL SEKMELER İÇİN YENİ STATE
+  const [activeTab, setActiveTab] = useState<string>('');
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // Sütunlar yüklendiğinde ilk sekmeyi otomatik seç
+  useEffect(() => {
+    if (columns.length > 0 && !activeTab) {
+      setActiveTab(columns[0].id);
+    }
+  }, [columns, activeTab]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -66,22 +75,48 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-100 p-8">
+    <main className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-10 text-center">
-          <h1 className="text-4xl font-black text-blue-600">TaskFlow Pro</h1>
-          <p className="text-gray-500 mt-2">KoçSistem NewChapter Teknik Projesi</p>
+        <header className="mb-6 md:mb-10 text-center">
+          <h1 className="text-3xl md:text-4xl font-black text-blue-600">TaskFlow Pro</h1>
+          <p className="text-gray-500 mt-1 md:mt-2 text-sm md:text-base">KoçSistem NewChapter Teknik Projesi</p>
         </header>
 
+        {/* SADECE MOBİLDE GÖRÜNEN SEKME MENÜSÜ */}
+        <div className="md:hidden flex justify-between overflow-x-auto mb-6 bg-white rounded-lg shadow-sm p-1">
+          {columns.map((col) => {
+            const columnTasksCount = tasks.filter((t) => t.columnId === col.id).length;
+            return (
+              <button
+                key={col.id}
+                onClick={() => setActiveTab(col.id)}
+                className={`flex-1 py-2 px-3 text-xs sm:text-sm font-semibold text-center rounded-md transition-all whitespace-nowrap ${
+                  activeTab === col.id
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-gray-500 hover:bg-gray-100'
+                }`}
+              >
+                {col.title} <span className="ml-1 opacity-80">({columnTasksCount})</span>
+              </button>
+            );
+          })}
+        </div>
+
         <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
-          <div className="flex gap-6 justify-center overflow-x-auto pb-4">
+          {/* PANO */}
+          <div className="flex flex-col md:flex-row md:gap-6 justify-center pb-4">
             {columns.map((column) => (
-              <Column
+              <div
                 key={column.id}
-                columnId={column.id}
-                title={column.title}
-                tasks={tasks.filter((t) => t.columnId === column.id)}
-              />
+                // Mobilde sadece seçili sekmeyi gösterir, masaüstünde (md:block) hepsini yan yana dizer
+                className={`${activeTab === column.id ? 'block' : 'hidden'} md:block w-full md:w-[350px] shrink-0`}
+              >
+                <Column
+                  columnId={column.id}
+                  title={column.title}
+                  tasks={tasks.filter((t) => t.columnId === column.id)}
+                />
+              </div>
             ))}
           </div>
         </DndContext>
@@ -89,5 +124,7 @@ export default function Home() {
     </main>
   );
 }
+
+
 
 
