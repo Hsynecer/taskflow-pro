@@ -4,24 +4,22 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DndContext, DragEndEvent, closestCorners } from '@dnd-kit/core';
 
-import { Column } from '../src/components/Column'; // Yol (path) hata verirse '../components/Column' yapabilirsin
-import { useBoardStore } from '../src/store/useBoardStore'; // Yol hata verirse '../store/useBoardStore' yapabilirsin
-import { supabase } from '../src/lib/supabase'; // Yol hata verirse '../lib/supabase' yapabilirsin
+import { Column } from '../src/components/Column';
+import { useBoardStore } from '../src/store/useBoardStore';
+import { supabase } from '../src/lib/supabase'; 
 
 export default function Home() {
   const router = useRouter();
   
-  // DİKKAT: setTasks sildik! Artık sadece ihtiyacımız olanları çekiyoruz.
+  // DİKKAT: setTasks sildik, yerine initializeBoard ve columns ekledik
   const { columns, tasks, initializeBoard, moveTask, isLoading } = useBoardStore();
   const [isClient, setIsClient] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // 1. HYDRATION KONTROLÜ
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // 2. GÜVENLİK VE AUTO-PROVISIONING
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -29,14 +27,12 @@ export default function Home() {
         router.push('/login');
       } else {
         setIsAuthenticated(true);
-        // GİRİŞ YAPILDIYSA: Panoyu, sütunları ve görevleri veritabanından topla getir
         initializeBoard(); 
       }
     };
     checkAuth();
   }, [router, initializeBoard]);
 
-  // 3. SÜRÜKLE BIRAK İŞLEMİ
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
@@ -69,7 +65,6 @@ export default function Home() {
     );
   }
 
-  // ANA TAHTA
   return (
     <main className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
@@ -94,4 +89,5 @@ export default function Home() {
     </main>
   );
 }
+
 
